@@ -72,6 +72,23 @@ Algumas coisas ficam com um toque final melhor pela interface gráfica:
   [Cohesion](https://flathub.org/apps/io.github.brunofin.Cohesion)
   (`flatpak install flathub io.github.brunofin.Cohesion`).
 
+## Extensões extras e restauração de configurações
+
+Esse script cobre só a base. No uso real, mais extensões foram entrando
+(tiling, clipboard, volume por app, etc.) e os atalhos/favoritos/config fina
+de cada uma foram ajustados na mão. Tudo isso está documentado e versionado:
+
+- **[EXTENSOES-EXTRAS.md](EXTENSOES-EXTRAS.md)** — lista completa das
+  extensões além das 3 instaladas pelo script, com link de origem e comando
+  de instalação de cada uma.
+- **`dconf/restore.sh`** — depois de instalar as extensões extras, roda esse
+  script pra recolocar tema, atalhos, favoritos do dock e configuração
+  específica de cada extensão (raio dos cantos, blur por área, posição da
+  dock, etc.), tudo de uma vez via `dconf load`.
+
+Ordem recomendada numa instalação nova: `./install.sh` (até o fim) →
+extensões extras do `EXTENSOES-EXTRAS.md` → `dconf/restore.sh` → logout/login.
+
 ## Por que os patches (`patches/`)
 
 Esse projeto não é só "clona e roda o install.sh de cada tema". Ao usar tudo
