@@ -95,11 +95,6 @@ Esse projeto não é só "clona e roda o install.sh de cada tema". Ao usar tudo
 junto, apareceram alguns problemas reais que só um passa por eles depois de
 testar de verdade:
 
-- **`dhruva_scroll_fix.py`**: a Dhruva tem uma opção "ciclar janelas com
-  scroll sobre o ícone" que só funcionava em pastas especiais (Lixeira, Pasta
-  Pessoal), não em apps normais em execução (Chrome, Discord etc). Corrigido
-  e [enviado como PR](https://github.com/NarkAgni/dhruva/pull/60) — se já
-  tiver sido aceito upstream, o script detecta e pula o patch sozinho.
 - **`mactahoe_sidebar_fix.py`**: a variante "solid" do MacTahoe ainda deixa a
   barra lateral do Nautilus/Configurações com uma regra CSS genérica
   transparente demais, que faz o conteúdo de outras janelas vazar através
@@ -115,6 +110,12 @@ testar de verdade:
 Se algum desses upstreams corrigir o problema numa versão futura, o patch
 correspondente simplesmente não encontra o texto original e é pulado (o
 script avisa, mas continua).
+
+Já houve um caso assim: a Dhruva tinha uma opção "ciclar janelas com scroll
+sobre o ícone" que só funcionava em pastas especiais, não em apps normais em
+execução. Corrigi e mandei como [PR](https://github.com/NarkAgni/dhruva/pull/60),
+mergeado upstream em 02/09/2026. Por isso o patch foi removido deste repo e
+o script agora só liga o toggle (`scroll-action-app`).
 
 ## Não incluído de propósito
 

@@ -108,41 +108,29 @@ step_1_dependencies() {
 # ---------------------------------------------------------------------------
 
 step_2_dhruva_dock() {
-    log "Etapa 2: instalando a dock Dhruva"
+    log "Etapa 2: instalando a dock Dhruva (zip oficial da última release)"
     local uuid="dhruva@narkagni"
-    local install_path="$HOME/.local/share/gnome-shell/extensions/$uuid"
-    local src="$WORK_DIR/dhruva"
+    local zip_path="$WORK_DIR/dhruva@narkagni.zip"
 
-    if [ -d "$install_path" ]; then
-        ok "Dhruva já está instalada."
-    else
-        rm -rf "$src"
-        git clone --depth 1 https://github.com/NarkAgni/dhruva.git "$src"
-        (
-            cd "$src"
-            glib-compile-schemas schemas
-        )
-        rm -rf "$install_path"
-        mkdir -p "$install_path"
-        cp "$src"/extension.js "$src"/prefs.js "$src"/stylesheet.css "$src"/metadata.json "$install_path"/
-        cp -r "$src"/icons "$install_path"/
-        cp -r "$src"/schemas "$install_path"/
-        mkdir -p "$install_path/src"
-        cp -r "$src"/src/core "$src"/src/prefs "$src"/src/ui "$install_path/src/"
-        ok "Dhruva copiada pra pasta de extensões."
+    # O zip da release é o jeito suportado de instalar. Copiar diretórios do
+    # repositório na mão quebra quando o layout muda (já mudou entre a v1.1 e
+    # a v3.x). O mesmo comando serve pra atualizar: as configurações ficam no
+    # dconf, não na pasta da extensão.
+    curl -fsSL -o "$zip_path" "https://github.com/NarkAgni/dhruva/releases/latest/download/dhruva@narkagni.zip"
+    gnome-extensions install -f "$zip_path"
+    ok "Dhruva instalada."
 
-        log "Aplicando correção de scroll (cicla janelas do app em execução ao rolar sobre o ícone)"
-        log "Isso é um bug conhecido da extensão original, corrigido em https://github.com/NarkAgni/dhruva/pull/60"
-        python3 "$(dirname "$0")/patches/dhruva_scroll_fix.py" "$install_path" || \
-            warn "Patch de scroll não aplicado (provavelmente o PR já foi mergeado upstream, tudo bem)."
-    fi
+    # Cicla as janelas do app ao rolar o scroll sobre o ícone na dock (vem desligado).
+    dconf write /org/gnome/shell/extensions/dhruva/scroll-action-app true
 
     if gnome-extensions list | grep -qx "$uuid"; then
         gnome-extensions disable dash-to-dock@micxgx.gmail.com 2>/dev/null || true
         gnome-extensions enable "$uuid"
         ok "Dhruva ativada, Dash to Dock desativada."
     else
-        set_last_step 2
+        # Marca a etapa anterior como a última concluída: depois do logout o
+        # script precisa rodar esta etapa de novo pra ativar a extensão.
+        set_last_step 1
         pause_for "Faça logout e login (extensão nova só é reconhecida depois disso)"
         exit 0
     fi
@@ -270,7 +258,7 @@ step_5_extensions_install() {
         gnome-extensions enable rounded-window-corners@fxgn
         ok "Extensões ativadas."
     else
-        set_last_step 5
+        set_last_step 4
         pause_for "Faça logout e login (extensões novas só são reconhecidas depois disso)"
         exit 0
     fi
