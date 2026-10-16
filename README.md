@@ -117,6 +117,8 @@ execução. Corrigi e mandei como [PR](https://github.com/NarkAgni/dhruva/pull/6
 mergeado upstream em 02/09/2026. Por isso o patch foi removido deste repo e
 o script agora só liga o toggle (`scroll-action-app`).
 
+A versão da Dhruva fica **fixada** no `install.sh` (variável `dhruva_version`, hoje v4.1) em vez de usar sempre a última. A v3.1 foi publicada com o schema sem duas chaves que o código lê e quebrou a dock e as preferências; o script confere essas chaves depois de instalar e aborta se faltarem.
+
 ## Não incluído de propósito
 
 - **Driver de GPU** (NVIDIA/AMD): fora de escopo, é específico de cada

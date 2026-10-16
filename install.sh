@@ -108,17 +108,28 @@ step_1_dependencies() {
 # ---------------------------------------------------------------------------
 
 step_2_dhruva_dock() {
-    log "Etapa 2: instalando a dock Dhruva (zip oficial da última release)"
+    local dhruva_version="v4.1"
+    log "Etapa 2: instalando a dock Dhruva ($dhruva_version, zip oficial da release)"
     local uuid="dhruva@narkagni"
     local zip_path="$WORK_DIR/dhruva@narkagni.zip"
 
-    # O zip da release é o jeito suportado de instalar. Copiar diretórios do
-    # repositório na mão quebra quando o layout muda (já mudou entre a v1.1 e
-    # a v3.x). O mesmo comando serve pra atualizar: as configurações ficam no
-    # dconf, não na pasta da extensão.
-    curl -fsSL -o "$zip_path" "https://github.com/NarkAgni/dhruva/releases/latest/download/dhruva@narkagni.zip"
+    # Versão fixada de propósito, em vez de "latest": a v3.1 foi publicada com
+    # o schema sem as chaves autohide-animation-speed e window-effect-speed que
+    # o código lê, o que derrubou a dock e a janela de preferências. Pra subir
+    # a versão, trocar a variável acima e conferir que o schema compilado tem
+    # as chaves (a checagem logo abaixo faz isso).
+    curl -fsSL -o "$zip_path" "https://github.com/NarkAgni/dhruva/releases/download/${dhruva_version}/dhruva@narkagni.zip"
     gnome-extensions install -f "$zip_path"
     ok "Dhruva instalada."
+
+    local ext_dir="$HOME/.local/share/gnome-shell/extensions/$uuid"
+    local key
+    for key in autohide-animation-speed window-effect-speed; do
+        if ! gsettings --schemadir "$ext_dir/schemas" get org.gnome.shell.extensions.dhruva "$key" >/dev/null 2>&1; then
+            err "Schema da Dhruva ${dhruva_version} sem a chave '$key': a extensão vai dar erro. Não continue, escolha outra versão."
+            exit 1
+        fi
+    done
 
     # Cicla as janelas do app ao rolar o scroll sobre o ícone na dock (vem desligado).
     dconf write /org/gnome/shell/extensions/dhruva/scroll-action-app true
